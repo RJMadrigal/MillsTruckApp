@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
@@ -17,6 +18,7 @@ import { useCart, CartItem } from '../context/CartContext';
 import { resolveImageUrl } from '../../../api/client';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useCurrency } from '../../../context/CurrencyContext';
+import { getProductMaxStock, isTruckProduct } from '../../catalog/utils/productUtils';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -102,6 +104,31 @@ export const CartScreen: React.FC = () => {
           {items.map(({ product, quantity }: CartItem) => {
             const priceInfo = getPriceInfo(product);
             const imgUri = resolveImageUrl(product.imageUrl);
+            const maxStock = getProductMaxStock(product);
+            const isTruck = isTruckProduct(product);
+            const isMaxReached = quantity >= maxStock;
+
+            const handleIncrease = () => {
+              if (isMaxReached) {
+                if (isTruck) {
+                  Alert.alert(
+                    isSpanish ? 'Unidad Única' : 'Single Unit',
+                    isSpanish
+                      ? 'Este camión es una unidad única disponible en inventario.'
+                      : 'This truck is a unique single unit available in inventory.'
+                  );
+                } else {
+                  Alert.alert(
+                    isSpanish ? 'Límite de Existencias' : 'Stock Limit',
+                    isSpanish
+                      ? `Solo hay ${maxStock} unidades disponibles de este repuesto en inventario.`
+                      : `Only ${maxStock} units available for this part in inventory.`
+                  );
+                }
+                return;
+              }
+              updateQuantity(product.productId, quantity + 1);
+            };
 
             return (
               <View key={product.productId} style={styles.cartCard}>
@@ -125,7 +152,23 @@ export const CartScreen: React.FC = () => {
                     </Pressable>
                   </View>
 
-                  {product.sku && <Text style={styles.itemSku}>Code: {product.sku}</Text>}
+                  <View style={styles.skuRow}>
+                    {product.sku && <Text style={styles.itemSku}>Code: {product.sku}</Text>}
+                    {isTruck ? (
+                      <View style={styles.stockNoticePill}>
+                        <Ionicons name="bus-outline" size={11} color="#1D4ED8" style={{ marginRight: 3 }} />
+                        <Text style={styles.stockNoticePillText}>
+                          {isSpanish ? 'Unidad única' : 'Single unit'}
+                        </Text>
+                      </View>
+                    ) : maxStock <= 10 && maxStock > 0 ? (
+                      <View style={[styles.stockNoticePill, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}>
+                        <Text style={[styles.stockNoticePillText, { color: '#B45309' }]}>
+                          {isSpanish ? `Máx: ${maxStock}` : `Max: ${maxStock}`}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
 
                   <View style={styles.cardBottomRow}>
                     <Text style={styles.itemPrice}>
@@ -145,10 +188,14 @@ export const CartScreen: React.FC = () => {
                       </Pressable>
                       <Text style={styles.qtyText}>{quantity}</Text>
                       <Pressable
-                        style={styles.qtyBtn}
-                        onPress={() => updateQuantity(product.productId, quantity + 1)}
+                        style={[styles.qtyBtn, isMaxReached && styles.qtyBtnDisabled]}
+                        onPress={handleIncrease}
                       >
-                        <Ionicons name="add" size={15} color="#0F172A" />
+                        <Ionicons
+                          name="add"
+                          size={15}
+                          color={isMaxReached ? '#CBD5E1' : '#0F172A'}
+                        />
                       </Pressable>
                     </View>
                   </View>
@@ -309,7 +356,27 @@ const styles = StyleSheet.create({
   itemSku: {
     fontSize: 11,
     color: '#94A3B8',
-    marginVertical: 2,
+  },
+  skuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginVertical: 3,
+  },
+  stockNoticePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  stockNoticePillText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#1E40AF',
   },
   cardBottomRow: {
     flexDirection: 'row',
@@ -343,6 +410,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  qtyBtnDisabled: {
+    opacity: 0.35,
+    backgroundColor: '#F1F5F9',
   },
   qtyBtnText: {
     fontSize: 16,

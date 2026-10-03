@@ -14,10 +14,12 @@
       "bundleIdentifier": "com.millstruckservice.app",
       "infoPlist": {
         "UIBackgroundModes": [
+          "fetch",
           "fetch"
         ],
         "NSCameraUsageDescription": "Esta app requiere acceso a la cámara para fotos de repuestos si es necesario.",
-        "NSPhotoLibraryUsageDescription": "Esta app requiere acceso a la galería para adjuntar fotos de referencias."
+        "NSPhotoLibraryUsageDescription": "Esta app requiere acceso a la galería para adjuntar fotos de referencias.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

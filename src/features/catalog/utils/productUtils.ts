@@ -147,3 +147,36 @@ export const getVehicleDetails = (product: Product): NormalizedVehicleDetails | 
 
   return null;
 };
+
+/**
+ * Retorna la cantidad máxima disponible de un producto o camión.
+ * Para camiones o vehículos únicos, el límite es 1.
+ * Para repuestos, toma en cuenta stockCurrent de la API (o 99 por defecto).
+ */
+export const getProductMaxStock = (product: Product): number => {
+  if (!product) return 1;
+
+  // 1. Si es camión comercial, la unidad es única por definición (stock máximo 1)
+  if (isTruckProduct(product)) {
+    return 1;
+  }
+
+  // 2. Si la API indica explícitamente el stock disponible
+  const rawStock =
+    product.stockCurrent ??
+    (product as any).StockCurrent ??
+    (product as any).stock ??
+    (product as any).Stock;
+
+  if (typeof rawStock === 'number' && !isNaN(rawStock)) {
+    return Math.max(0, Math.floor(rawStock));
+  }
+
+  // 3. Si inStock viene como falso, no hay existencias
+  if (product.inStock === false) {
+    return 0;
+  }
+
+  // 4. Límite razonable por defecto para repuestos con inventario no especificado
+  return 99;
+};

@@ -26,6 +26,7 @@ import {
   getProductGallery,
   getVehicleDetails,
   isTruckProduct,
+  getProductMaxStock,
 } from '../utils/productUtils';
 import { Product } from '../types/catalog.types';
 import { useLanguage } from '../../../i18n/LanguageContext';
@@ -48,7 +49,7 @@ export const ProductDetailScreen: React.FC = () => {
   const product: Product = freshProduct || initialProduct;
   const priceInfo = getPriceInfo(product);
 
-  const { addToCart } = useCart();
+  const { items, addToCart } = useCart();
   const { recordProductVisit } = useActivity();
 
   const [quantity, setQuantity] = useState(1);
@@ -70,6 +71,11 @@ export const ProductDetailScreen: React.FC = () => {
   const galleryImages = getProductGallery(product);
   const isTruck = isTruckProduct(product);
   const vehicleDetails = getVehicleDetails(product);
+  const maxStock = getProductMaxStock(product);
+
+  // Cantidad ya presente en el carrito para este producto
+  const existingCartItem = items.find((i) => i.product.productId === product.productId);
+  const currentInCart = existingCartItem ? existingCartItem.quantity : 0;
 
   const locationName =
     typeof product.location === 'object' && product.location !== null
@@ -108,13 +114,68 @@ export const ProductDetailScreen: React.FC = () => {
   };
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
-    setAddedNotice(true);
-    setTimeout(() => setAddedNotice(false), 1500);
+    if (maxStock <= 0) {
+      Alert.alert(
+        isSpanish ? 'Sin Existencias' : 'Out of Stock',
+        isSpanish
+          ? 'Este producto no cuenta con existencias disponibles en este momento.'
+          : 'This item is currently out of stock.'
+      );
+      return;
+    }
+
+    if (currentInCart >= maxStock) {
+      if (isTruck) {
+        Alert.alert(
+          isSpanish ? 'Vehículo ya en el carrito' : 'Truck already in cart',
+          isSpanish
+            ? 'Este camión ya se encuentra en tu carrito. Al ser una unidad única, no es posible agregar más.'
+            : 'This truck is already in your cart. As a single vehicle, you cannot add more.'
+        );
+      } else {
+        Alert.alert(
+          isSpanish ? 'Límite alcanzado' : 'Limit reached',
+          isSpanish
+            ? `Ya tienes las ${maxStock} unidades disponibles en tu carrito.`
+            : `You already have all ${maxStock} available units in your cart.`
+        );
+      }
+      return;
+    }
+
+    const availableToAdd = maxStock - currentInCart;
+    const qtyToAdd = Math.min(quantity, availableToAdd);
+
+    const added = addToCart(product, qtyToAdd);
+    if (added) {
+      setAddedNotice(true);
+      setTimeout(() => setAddedNotice(false), 1500);
+      if (qtyToAdd < quantity) {
+        Alert.alert(
+          isSpanish ? 'Cantidad ajustada' : 'Quantity adjusted',
+          isSpanish
+            ? `Solo se agregaron ${qtyToAdd} unidad(es) porque se alcanzó el stock máximo disponible (${maxStock}).`
+            : `Only ${qtyToAdd} unit(s) added as maximum available stock (${maxStock}) was reached.`
+        );
+      }
+    }
   };
 
   const handleBuyNow = () => {
-    addToCart(product, quantity);
+    if (maxStock <= 0) {
+      Alert.alert(
+        isSpanish ? 'Sin Existencias' : 'Out of Stock',
+        isSpanish
+          ? 'Este producto no cuenta con existencias disponibles en este momento.'
+          : 'This item is currently out of stock.'
+      );
+      return;
+    }
+
+    if (currentInCart < maxStock) {
+      const availableToAdd = maxStock - currentInCart;
+      addToCart(product, Math.min(quantity, availableToAdd));
+    }
     navigation.navigate('Checkout');
   };
 
@@ -434,9 +495,19 @@ export const ProductDetailScreen: React.FC = () => {
           {/* Selector de Cantidad (Si no es camión o para repuestos) */}
           {!isTruck && (
             <View style={styles.qtySection}>
-              <Text style={styles.qtyLabel}>
-                {isSpanish ? 'Cantidad a cotizar:' : 'Quantity to order:'}
-              </Text>
+              <View>
+                <Text style={styles.qtyLabel}>
+                  {isSpanish ? 'Cantidad a cotizar:' : 'Quantity to order:'}
+                </Text>
+                {maxStock <= 10 && maxStock > 0 && (
+                  <Text style={styles.qtyStockSubtext}>
+                    {isSpanish
+                      ? `Disponibles en inventario: ${maxStock}`
+                      : `Available in stock: ${maxStock}`}
+                    {currentInCart > 0 && ` (${currentInCart} en carrito)`}
+                  </Text>
+                )}
+              </View>
               <View style={styles.qtyControls}>
                 <Pressable
                   style={[styles.qtyBtn, quantity <= 1 && styles.qtyBtnDisabled]}
@@ -446,10 +517,49 @@ export const ProductDetailScreen: React.FC = () => {
                   <Ionicons name="remove" size={18} color="#0F172A" />
                 </Pressable>
                 <Text style={styles.qtyValue}>{quantity}</Text>
-                <Pressable style={styles.qtyBtn} onPress={() => setQuantity((q) => q + 1)}>
-                  <Ionicons name="add" size={18} color="#0F172A" />
+                <Pressable
+                  style={[
+                    styles.qtyBtn,
+                    (quantity >= maxStock || quantity + currentInCart >= maxStock) &&
+                      styles.qtyBtnDisabled,
+                  ]}
+                  onPress={() => {
+                    if (quantity >= maxStock || quantity + currentInCart >= maxStock) {
+                      Alert.alert(
+                        isSpanish ? 'Límite de Existencias' : 'Stock Limit',
+                        isSpanish
+                          ? `Solo hay ${maxStock} unidad(es) disponible(s) en inventario.`
+                          : `Only ${maxStock} unit(s) available in inventory.`
+                      );
+                      return;
+                    }
+                    setQuantity((q) => q + 1);
+                  }}
+                  disabled={quantity >= maxStock || quantity + currentInCart >= maxStock}
+                >
+                  <Ionicons
+                    name="add"
+                    size={18}
+                    color={
+                      quantity >= maxStock || quantity + currentInCart >= maxStock
+                        ? '#94A3B8'
+                        : '#0F172A'
+                    }
+                  />
                 </Pressable>
               </View>
+            </View>
+          )}
+
+          {/* Aviso para camiones (Unidad única) */}
+          {isTruck && (
+            <View style={styles.truckSingleNotice}>
+              <Ionicons name="information-circle" size={16} color="#1D4ED8" style={{ marginRight: 6 }} />
+              <Text style={styles.truckSingleNoticeText}>
+                {isSpanish
+                  ? 'Vehículo único disponible en patio. Cotización por 1 unidad.'
+                  : 'Single vehicle available on yard. Quote for 1 unit.'}
+              </Text>
             </View>
           )}
 
@@ -895,6 +1005,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#334155',
+  },
+  qtyStockSubtext: {
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  truckSingleNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  truckSingleNoticeText: {
+    fontSize: 12,
+    color: '#1E40AF',
+    fontWeight: '600',
+    flex: 1,
   },
   qtyControls: {
     flexDirection: 'row',

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { Product } from '../../catalog/types/catalog.types';
+import { getProductMaxStock, isTruckProduct } from '../../catalog/utils/productUtils';
 
 export interface CartItem {
   product: Product;
@@ -9,7 +10,7 @@ export interface CartItem {
 
 interface CartContextData {
   items: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number) => boolean;
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
@@ -51,10 +52,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         product: {
           productId: item.product.productId,
           name: item.product.name ? item.product.name.slice(0, 90) : '',
+          sku: item.product.sku || null,
           unitPrice: item.product.unitPrice || 0,
           unitPriceCRC: item.product.unitPriceCRC ?? item.product.UnitPriceCRC ?? null,
           imageUrl: item.product.imageUrl || null,
           inStock: item.product.inStock,
+          stockCurrent: item.product.stockCurrent,
           categoryName: item.product.categoryName || item.product.category?.name || null,
           category: item.product.category
             ? { categoryId: item.product.category.categoryId, name: item.product.category.name }
@@ -64,6 +67,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
               ? { name: item.product.location.name, code: item.product.location.code }
               : item.product.location || null,
           brand: item.product.brand || null,
+          vehicleDetails: item.product.vehicleDetails || item.product.VehicleDetails || null,
         },
       }));
 
@@ -78,19 +82,35 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [items, isLoaded]);
 
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1): boolean => {
+    const maxStock = getProductMaxStock(product);
+    if (maxStock <= 0) {
+      return false;
+    }
+
+    let success = true;
     setItems((prev) => {
       const existingIndex = prev.findIndex((item) => item.product.productId === product.productId);
       if (existingIndex > -1) {
+        const currentQty = prev[existingIndex].quantity;
+        if (currentQty >= maxStock) {
+          success = false;
+          return prev;
+        }
         const updated = [...prev];
+        const newQty = Math.min(maxStock, currentQty + quantity);
         updated[existingIndex] = {
           ...updated[existingIndex],
-          quantity: updated[existingIndex].quantity + quantity,
+          quantity: newQty,
         };
         return updated;
       }
-      return [...prev, { product, quantity }];
+
+      const initialQty = Math.min(maxStock, Math.max(1, quantity));
+      return [...prev, { product, quantity: initialQty }];
     });
+
+    return success;
   };
 
   const removeFromCart = (productId: number) => {
@@ -103,9 +123,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     setItems((prev) =>
-      prev.map((item) =>
-        item.product.productId === productId ? { ...item, quantity } : item
-      )
+      prev.map((item) => {
+        if (item.product.productId === productId) {
+          const maxStock = getProductMaxStock(item.product);
+          const cappedQty = Math.min(maxStock, Math.max(1, quantity));
+          return { ...item, quantity: cappedQty };
+        }
+        return item;
+      })
     );
   };
 
