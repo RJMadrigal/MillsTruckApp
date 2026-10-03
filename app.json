@@ -45,11 +45,6 @@
           "backgroundColor": "#FFFFFF"
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "mills-truck-service-id"
-      }
-    }
+    ]
   }
 }
