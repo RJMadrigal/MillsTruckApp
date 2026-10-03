@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "CJ Trucks Parts",
+    "slug": "cj-trucks-parts",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.millstruckservice.app",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch"
+        ],
+        "NSCameraUsageDescription": "Esta app requiere acceso a la cámara para fotos de repuestos si es necesario.",
+        "NSPhotoLibraryUsageDescription": "Esta app requiere acceso a la galería para adjuntar fotos de referencias."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.millstruckservice.app",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": [
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#FFFFFF"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "mills-truck-service-id"
+      }
+    }
+  }
+}
