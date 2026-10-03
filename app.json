@@ -45,6 +45,12 @@
           "backgroundColor": "#FFFFFF"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "89163ce6-2a27-4a6d-a877-f1d85faacb5d"
+      }
+    },
+    "owner": "bymadrigal"
   }
 }
