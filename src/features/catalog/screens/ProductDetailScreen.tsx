@@ -12,8 +12,9 @@ import {
   Linking,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -40,6 +41,7 @@ type NavProps = NativeStackNavigationProp<RootStackParamList>;
 export const ProductDetailScreen: React.FC = () => {
   const route = useRoute<RouteProps>();
   const navigation = useNavigation<NavProps>();
+  const insets = useSafeAreaInsets();
   const { product: initialProduct } = route.params;
   const { t, isSpanish, translateCategory } = useLanguage();
   const { getPriceInfo, formatAmount, currency } = useCurrency();
@@ -642,17 +644,48 @@ export const ProductDetailScreen: React.FC = () => {
       </View>
 
       {/* Modal de Pantalla Completa para Inspección de Fotos */}
-      <Modal visible={isModalVisible} transparent={false} animationType="fade">
-        <SafeAreaView style={styles.modalSafeArea}>
+      <Modal
+        visible={isModalVisible}
+        transparent={false}
+        animationType="fade"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View
+          style={[
+            styles.modalSafeArea,
+            {
+              paddingTop: Math.max(insets.top, Platform.OS === 'ios' ? 48 : 24),
+              paddingBottom: Math.max(insets.bottom, Platform.OS === 'ios' ? 34 : 16),
+            },
+          ]}
+        >
           <StatusBar barStyle="light-content" />
           <View style={styles.modalHeader}>
-            <Pressable style={styles.modalCloseBtn} onPress={() => setIsModalVisible(false)}>
-              <Ionicons name="close" size={24} color="#FFFFFF" />
+            <Pressable
+              style={styles.modalCloseBtn}
+              onPress={() => setIsModalVisible(false)}
+              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+              accessibilityRole="button"
+              accessibilityLabel={isSpanish ? 'Cerrar' : 'Close'}
+            >
+              <Ionicons name="close" size={26} color="#FFFFFF" />
             </Pressable>
-            <Text style={styles.modalTitle}>
-              {modalImageIndex + 1} de {galleryImages.length}
-            </Text>
-            <View style={{ width: 40 }} />
+            <View style={styles.modalCounterBadge}>
+              <Text style={styles.modalTitle}>
+                {modalImageIndex + 1} / {galleryImages.length}
+              </Text>
+            </View>
+            <Pressable
+              style={styles.modalClosePill}
+              onPress={() => setIsModalVisible(false)}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              accessibilityRole="button"
+              accessibilityLabel={isSpanish ? 'Cerrar' : 'Close'}
+            >
+              <Text style={styles.modalClosePillText}>
+                {isSpanish ? 'Cerrar' : 'Close'}
+              </Text>
+            </Pressable>
           </View>
 
           <ScrollView
@@ -667,17 +700,35 @@ export const ProductDetailScreen: React.FC = () => {
             style={styles.modalScroll}
           >
             {galleryImages.map((uri, index) => (
-              <View key={`fullscreen-${index}`} style={styles.modalSlide}>
+              <Pressable
+                key={`fullscreen-${index}`}
+                style={styles.modalSlide}
+                onPress={() => setIsModalVisible(false)}
+              >
                 <Image
                   source={{ uri }}
                   style={styles.modalImage}
                   contentFit="contain"
                   cachePolicy="memory-disk"
                 />
-              </View>
+              </Pressable>
             ))}
           </ScrollView>
-        </SafeAreaView>
+
+          {/* Botón flotante inferior para cerrar fácil con el pulgar */}
+          <View style={styles.modalBottomBar}>
+            <Pressable
+              style={styles.modalBottomCloseBtn}
+              onPress={() => setIsModalVisible(false)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="close-circle-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
+              <Text style={styles.modalBottomCloseText}>
+                {isSpanish ? 'Toca para cerrar' : 'Tap to close'}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -1157,21 +1208,44 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   modalHeader: {
-    height: 50,
+    height: 56,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
+    zIndex: 10,
   },
   modalCloseBtn: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.22)',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  modalCounterBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
   modalTitle: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  modalClosePill: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.22)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalClosePillText: {
+    color: '#FFFFFF',
+    fontSize: 13,
     fontWeight: '700',
   },
   modalScroll: {
@@ -1185,5 +1259,23 @@ const styles = StyleSheet.create({
   modalImage: {
     width: SCREEN_WIDTH,
     height: '100%',
+  },
+  modalBottomBar: {
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalBottomCloseBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 24,
+  },
+  modalBottomCloseText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
