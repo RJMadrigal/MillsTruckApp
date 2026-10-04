@@ -1,28 +1,88 @@
 export type Language = 'en' | 'es';
 
 export const CATEGORY_TRANSLATIONS: Record<string, { en: string; es: string }> = {
+  // Motores / Engines
+  'motores': { en: 'Engines', es: 'Motores' },
+  'engines': { en: 'Engines', es: 'Motores' },
+  'motor': { en: 'Engine', es: 'Motor' },
+  'engine': { en: 'Engine', es: 'Motor' },
   'motores y turbos': { en: 'Engines & Turbos', es: 'Motores y Turbos' },
   'engines & turbos': { en: 'Engines & Turbos', es: 'Motores y Turbos' },
-  'frenos': { en: 'Brakes', es: 'Frenos' },
-  'brakes': { en: 'Brakes', es: 'Frenos' },
-  'transmisiones': { en: 'Transmissions', es: 'Transmisiones' },
-  'transmissions': { en: 'Transmissions', es: 'Transmisiones' },
-  'suspensiones y ejes': { en: 'Suspension & Axles', es: 'Suspensiones y Ejes' },
-  'suspension & axles': { en: 'Suspension & Axles', es: 'Suspensiones y Ejes' },
-  'combustible e inyección': { en: 'Fuel & Injection', es: 'Combustible e Inyección' },
-  'fuel & injection': { en: 'Fuel & Injection', es: 'Combustible e Inyección' },
-  'filtros y aceites': { en: 'Filters & Oil', es: 'Filtros y Aceites' },
-  'filters & oil': { en: 'Filters & Oil', es: 'Filtros y Aceites' },
-  'eléctrico': { en: 'Electrical', es: 'Eléctrico' },
-  'electrical': { en: 'Electrical', es: 'Eléctrico' },
+
+  // Camiones / Trucks
   'camiones': { en: 'Trucks', es: 'Camiones' },
   'trucks': { en: 'Trucks', es: 'Camiones' },
-  'repuestos generales': { en: 'General Parts', es: 'Repuestos Generales' },
-  'general parts': { en: 'General Parts', es: 'Repuestos Generales' },
+  'camión': { en: 'Truck', es: 'Camión' },
+  'camion': { en: 'Truck', es: 'Camión' },
+  'truck': { en: 'Truck', es: 'Camión' },
+
+  // Frenos / Brakes
+  'frenos': { en: 'Brakes', es: 'Frenos' },
+  'brakes': { en: 'Brakes', es: 'Frenos' },
+  'freno': { en: 'Brake', es: 'Freno' },
+  'brake': { en: 'Brake', es: 'Freno' },
+  'frenos de aire': { en: 'Air Brakes', es: 'Frenos de Aire' },
+  'air brakes': { en: 'Air Brakes', es: 'Frenos de Aire' },
+
+  // Transmisiones / Transmissions
+  'transmisiones': { en: 'Transmissions', es: 'Transmisiones' },
+  'transmissions': { en: 'Transmissions', es: 'Transmisiones' },
+  'transmisión': { en: 'Transmission', es: 'Transmisión' },
+  'transmision': { en: 'Transmission', es: 'Transmisión' },
+  'transmission': { en: 'Transmission', es: 'Transmisión' },
+  'transmisiones y embragues': { en: 'Transmissions & Clutches', es: 'Transmisiones y Embragues' },
+  'transmissions & clutches': { en: 'Transmissions & Clutches', es: 'Transmisiones y Embragues' },
+  'embragues': { en: 'Clutches', es: 'Embragues' },
+  'clutches': { en: 'Clutches', es: 'Embragues' },
+
+  // Suspensiones y Ejes
+  'suspensiones y ejes': { en: 'Suspension & Axles', es: 'Suspensiones y Ejes' },
+  'suspension & axles': { en: 'Suspension & Axles', es: 'Suspensiones y Ejes' },
+  'suspensiones': { en: 'Suspension', es: 'Suspensiones' },
+  'suspensión': { en: 'Suspension', es: 'Suspensión' },
+  'suspension': { en: 'Suspension', es: 'Suspensión' },
+  'ejes': { en: 'Axles', es: 'Ejes' },
+  'axles': { en: 'Axles', es: 'Ejes' },
+  'diferenciales': { en: 'Differentials', es: 'Diferenciales' },
+  'differentials': { en: 'Differentials', es: 'Diferenciales' },
+
+  // Combustible e Inyección
+  'combustible e inyección': { en: 'Fuel & Injection', es: 'Combustible e Inyección' },
+  'combustible e inyeccion': { en: 'Fuel & Injection', es: 'Combustible e Inyección' },
+  'fuel & injection': { en: 'Fuel & Injection', es: 'Combustible e Inyección' },
+  'inyección diésel': { en: 'Diesel Injection', es: 'Inyección Diésel' },
+  'inyeccion diesel': { en: 'Diesel Injection', es: 'Inyección Diésel' },
+  'diesel injection': { en: 'Diesel Injection', es: 'Inyección Diésel' },
+  'inyección': { en: 'Injection', es: 'Inyección' },
+  'inyeccion': { en: 'Injection', es: 'Inyección' },
+  'injection': { en: 'Injection', es: 'Inyección' },
+
+  // Filtros y Aceites
+  'filtros y aceites': { en: 'Filters & Oil', es: 'Filtros y Aceites' },
+  'filters & oil': { en: 'Filters & Oil', es: 'Filtros y Aceites' },
+  'filtros': { en: 'Filters', es: 'Filtros' },
+  'filters': { en: 'Filters', es: 'Filtros' },
+
+  // Eléctrico
+  'eléctrico': { en: 'Electrical', es: 'Eléctrico' },
+  'electrico': { en: 'Electrical', es: 'Eléctrico' },
+  'electrical': { en: 'Electrical', es: 'Eléctrico' },
+
+  // Climatización y Cabina
   'cooling & heating': { en: 'Cooling & Heating', es: 'Enfriamiento y Calefacción' },
   'enfriamiento y calefacción': { en: 'Cooling & Heating', es: 'Enfriamiento y Calefacción' },
+  'enfriamiento y calefaccion': { en: 'Cooling & Heating', es: 'Enfriamiento y Calefacción' },
   'cabin & body': { en: 'Cabin & Body', es: 'Cabina y Carrocería' },
   'cabina y carrocería': { en: 'Cabin & Body', es: 'Cabina y Carrocería' },
+  'cabina y carroceria': { en: 'Cabin & Body', es: 'Cabina y Carrocería' },
+
+  // Generales y Filtros Globales
+  'repuestos generales': { en: 'General Parts', es: 'Repuestos Generales' },
+  'general parts': { en: 'General Parts', es: 'Repuestos Generales' },
+  'todos los repuestos': { en: 'All Parts', es: 'Todos los Repuestos' },
+  'all parts': { en: 'All Parts', es: 'Todos los Repuestos' },
+  'todos': { en: 'All', es: 'Todos' },
+  'all': { en: 'All', es: 'Todos' },
 };
 
 export const translateCategoryName = (name: string, lang: Language): string => {
@@ -32,6 +92,33 @@ export const translateCategoryName = (name: string, lang: Language): string => {
   if (match) {
     return match[lang];
   }
+
+  // Búsqueda inteligente por coincidencia parcial si la categoría viene con texto adicional
+  if (key.includes('motor') || key.includes('engine')) {
+    return lang === 'en' ? 'Engines' : 'Motores';
+  }
+  if (key.includes('freno') || key.includes('brake')) {
+    return lang === 'en' ? 'Brakes' : 'Frenos';
+  }
+  if (key.includes('camion') || key.includes('truck')) {
+    return lang === 'en' ? 'Trucks' : 'Camiones';
+  }
+  if (key.includes('transmisi') || key.includes('transmission')) {
+    return lang === 'en' ? 'Transmissions' : 'Transmisiones';
+  }
+  if (key.includes('diferencial') || key.includes('differential')) {
+    return lang === 'en' ? 'Differentials' : 'Diferenciales';
+  }
+  if (key.includes('suspensi') || key.includes('suspension')) {
+    return lang === 'en' ? 'Suspension' : 'Suspensión';
+  }
+  if (key.includes('inyecc') || key.includes('inject')) {
+    return lang === 'en' ? 'Injection' : 'Inyección';
+  }
+  if (key.includes('filtr') || key.includes('filter')) {
+    return lang === 'en' ? 'Filters' : 'Filtros';
+  }
+
   return name;
 };
 

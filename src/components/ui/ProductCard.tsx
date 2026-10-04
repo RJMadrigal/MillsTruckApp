@@ -6,6 +6,7 @@ import { Product } from '../../features/catalog/types/catalog.types';
 import { resolveImageUrl } from '../../api/client';
 import { useCart } from '../../features/cart/context/CartContext';
 import { useCurrency } from '../../context/CurrencyContext';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +16,7 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = React.memo(({ product, onPress }) => {
   const { addToCart } = useCart();
   const { getPriceInfo } = useCurrency();
+  const { isSpanish, translateCategory } = useLanguage();
   const [justAdded, setJustAdded] = useState(false);
 
   const priceInfo = getPriceInfo(product);
@@ -25,6 +27,11 @@ export const ProductCard: React.FC<ProductCardProps> = React.memo(({ product, on
       : typeof product.location === 'string'
       ? product.location
       : null;
+
+  const rawCategoryName = product.category?.name || product.categoryName;
+  const categoryOrBrand = rawCategoryName
+    ? translateCategory(rawCategoryName)
+    : product.brand || (isSpanish ? 'REPUESTO PESADO' : 'HEAVY DUTY PART');
 
   const handleAdd = (e: any) => {
     e.stopPropagation?.();
@@ -58,7 +65,9 @@ export const ProductCard: React.FC<ProductCardProps> = React.memo(({ product, on
             style={{ marginRight: 4 }}
           />
           <Text style={[styles.badgeText, product.inStock !== false ? styles.badgeTextInStock : styles.badgeTextOutOfStock]}>
-            {product.inStock !== false ? 'En Inventario' : 'Bajo Pedido'}
+            {product.inStock !== false
+              ? (isSpanish ? 'En Inventario' : 'In Stock')
+              : (isSpanish ? 'Bajo Pedido' : 'On Request')}
           </Text>
         </View>
 
@@ -74,7 +83,7 @@ export const ProductCard: React.FC<ProductCardProps> = React.memo(({ product, on
 
       <View style={styles.content}>
         <Text style={styles.brand} numberOfLines={1}>
-          {product.brand || product.category?.name || 'REPUESTO PESADO'}
+          {categoryOrBrand}
         </Text>
         <Text style={styles.title} numberOfLines={2}>
           {product.name}

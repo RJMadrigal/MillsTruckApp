@@ -8,6 +8,7 @@ import { useCart } from '../../features/cart/context/CartContext';
 import { useCurrency } from '../../context/CurrencyContext';
 
 import { isTruckProduct, getProductGallery } from '../../features/catalog/utils/productUtils';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 interface CompactProductCardProps {
   product: Product;
@@ -19,6 +20,7 @@ export const CompactProductCard: React.FC<CompactProductCardProps> = React.memo(
   ({ product, onPress, width = 165 }) => {
     const { addToCart } = useCart();
     const { getPriceInfo } = useCurrency();
+    const { isSpanish, translateCategory } = useLanguage();
     const [justAdded, setJustAdded] = useState(false);
 
     const priceInfo = getPriceInfo(product);
@@ -41,9 +43,12 @@ export const CompactProductCard: React.FC<CompactProductCardProps> = React.memo(
       (product.productId % 2 === 0);
 
     const locationDisplay = isUSA ? 'Easton, PA' : 'San José, CR';
+    const rawCategory = product.category?.name || product.categoryName;
     const categoryName = isTruck
-      ? 'Truck'
-      : product.category?.name || product.brand || 'Part';
+      ? (isSpanish ? 'Camión' : 'Truck')
+      : rawCategory
+      ? translateCategory(rawCategory)
+      : (product.brand || (isSpanish ? 'Repuesto' : 'Part'));
 
     const handleQuickAdd = (e: any) => {
       e.stopPropagation?.();
