@@ -661,31 +661,11 @@ export const ProductDetailScreen: React.FC = () => {
         >
           <StatusBar barStyle="light-content" />
           <View style={styles.modalHeader}>
-            <Pressable
-              style={styles.modalCloseBtn}
-              onPress={() => setIsModalVisible(false)}
-              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-              accessibilityRole="button"
-              accessibilityLabel={isSpanish ? 'Cerrar' : 'Close'}
-            >
-              <Ionicons name="close" size={26} color="#FFFFFF" />
-            </Pressable>
             <View style={styles.modalCounterBadge}>
               <Text style={styles.modalTitle}>
                 {modalImageIndex + 1} / {galleryImages.length}
               </Text>
             </View>
-            <Pressable
-              style={styles.modalClosePill}
-              onPress={() => setIsModalVisible(false)}
-              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-              accessibilityRole="button"
-              accessibilityLabel={isSpanish ? 'Cerrar' : 'Close'}
-            >
-              <Text style={styles.modalClosePillText}>
-                {isSpanish ? 'Cerrar' : 'Close'}
-              </Text>
-            </Pressable>
           </View>
 
           <ScrollView
@@ -1208,45 +1188,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   modalHeader: {
-    height: 56,
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: 16,
     zIndex: 10,
   },
-  modalCloseBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.22)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   modalCounterBadge: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
   },
   modalTitle: {
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '700',
     letterSpacing: 0.5,
-  },
-  modalClosePill: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.22)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalClosePillText: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '700',
   },
   modalScroll: {
     flex: 1,
