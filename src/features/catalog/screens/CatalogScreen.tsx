@@ -24,6 +24,7 @@ import { Product, Category } from '../types/catalog.types';
 import { useCart } from '../../cart/context/CartContext';
 import { useActivity } from '../context/ActivityContext';
 import { useLanguage } from '../../../i18n/LanguageContext';
+import { getCategoryIcon } from '../utils/productUtils';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type CatalogRouteProp = RouteProp<MainTabParamList, 'CatalogTab'>;
@@ -126,18 +127,6 @@ export const CatalogScreen: React.FC = () => {
 
   const selectedCategory = categories.find((c: Category) => c.categoryId === selectedCategoryId);
   const products = paginatedData?.items || [];
-
-  // Categorías con iconos nativos como en la app de referencia
-  const getCategoryIcon = (name: string) => {
-    const n = name.toLowerCase();
-    if (n.includes('camion') || n.includes('truck')) return 'truck';
-    if (n.includes('motor') || n.includes('engine')) return 'engine-outline';
-    if (n.includes('transmi') || n.includes('gear')) return 'cog-outline';
-    if (n.includes('freno') || n.includes('brake')) return 'car-brake-alert';
-    if (n.includes('difer') || n.includes('eje') || n.includes('axle')) return 'car-traction-control';
-    if (n.includes('filtro')) return 'oil';
-    return 'truck-outline';
-  };
 
   // Filtrado o segmentación para las secciones
   const primaryProducts = products.slice(0, 10);

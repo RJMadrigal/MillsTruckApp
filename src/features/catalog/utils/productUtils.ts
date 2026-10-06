@@ -180,3 +180,33 @@ export const getProductMaxStock = (product: Product): number => {
   // 4. Límite razonable por defecto para repuestos con inventario no especificado
   return 99;
 };
+
+/**
+ * Retorna un ícono temático y coherente de MaterialCommunityIcons
+ * para cada categoría del catálogo.
+ */
+export const getCategoryIcon = (categoryName?: string | null): string => {
+  if (!categoryName) return 'package-variant-closed';
+  const n = categoryName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  if (n.includes('camion') || n.includes('truck') || n.includes('cabezal')) return 'truck';
+  if (n.includes('motor') || n.includes('engine')) return 'engine-outline';
+  if (n.includes('turbo')) return 'turbine';
+  if (n.includes('freno') || n.includes('brake') || n.includes('zapata')) return 'car-brake-alert';
+  if (n.includes('transmi') || n.includes('gear') || n.includes('clutch') || n.includes('embrague')) return 'cog-outline';
+  if (n.includes('llanta') || n.includes('tire') || n.includes('rueda') || n.includes('neumatic')) return 'tire';
+  if (n.includes('hidraul') || n.includes('hydraul') || n.includes('bomba')) return 'gauge';
+  if (n.includes('cabina') || n.includes('cabin') || n.includes('carrocer')) return 'car-door';
+  if (n.includes('chasis') || n.includes('chassi') || n.includes('frame')) return 'car-traction-control';
+  if (n.includes('accesori') || n.includes('accessori') || n.includes('herramienta') || n.includes('tool')) return 'tools';
+  if (n.includes('suspens') || n.includes('eje') || n.includes('axle') || n.includes('difer')) return 'car-traction-control';
+  if (n.includes('inyec') || n.includes('combust') || n.includes('fuel')) return 'gas-station';
+  if (n.includes('filtro') || n.includes('oil') || n.includes('aceite')) return 'oil';
+  if (n.includes('electr') || n.includes('luz') || n.includes('sensor') || n.includes('flash')) return 'flash-outline';
+  if (n.includes('otro') || n.includes('other') || n.includes('misc')) return 'dots-horizontal-circle-outline';
+
+  return 'package-variant-closed';
+};

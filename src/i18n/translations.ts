@@ -75,6 +75,46 @@ export const CATEGORY_TRANSLATIONS: Record<string, { en: string; es: string }> =
   'cabin & body': { en: 'Cabin & Body', es: 'Cabina y Carrocería' },
   'cabina y carrocería': { en: 'Cabin & Body', es: 'Cabina y Carrocería' },
   'cabina y carroceria': { en: 'Cabin & Body', es: 'Cabina y Carrocería' },
+  'cabinas': { en: 'Cabins', es: 'Cabinas' },
+  'cabins': { en: 'Cabins', es: 'Cabinas' },
+  'cabina': { en: 'Cabin', es: 'Cabina' },
+  'cabin': { en: 'Cabin', es: 'Cabina' },
+
+  // Turbos
+  'turbos': { en: 'Turbos', es: 'Turbos' },
+  'turbo': { en: 'Turbo', es: 'Turbo' },
+
+  // Llantas / Tires
+  'llantas': { en: 'Tires', es: 'Llantas' },
+  'tires': { en: 'Tires', es: 'Llantas' },
+  'llanta': { en: 'Tire', es: 'Llanta' },
+  'tire': { en: 'Tire', es: 'Llanta' },
+  'ruedas': { en: 'Wheels', es: 'Ruedas' },
+  'wheels': { en: 'Wheels', es: 'Ruedas' },
+
+  // Hidráulicos / Hydraulics
+  'hidraulicos': { en: 'Hydraulics', es: 'Hidráulicos' },
+  'hidráulicos': { en: 'Hydraulics', es: 'Hidráulicos' },
+  'hydraulics': { en: 'Hydraulics', es: 'Hidráulicos' },
+  'hidraulico': { en: 'Hydraulic', es: 'Hidráulico' },
+  'hidráulico': { en: 'Hydraulic', es: 'Hidráulico' },
+  'hydraulic': { en: 'Hydraulic', es: 'Hidráulico' },
+
+  // Chasis / Chassis
+  'chasis': { en: 'Chassis', es: 'Chasis' },
+  'chassis': { en: 'Chassis', es: 'Chasis' },
+
+  // Accesorios / Accessories
+  'accesorios': { en: 'Accessories', es: 'Accesorios' },
+  'accessories': { en: 'Accessories', es: 'Accesorios' },
+  'accesorio': { en: 'Accessory', es: 'Accesorio' },
+  'accessory': { en: 'Accessory', es: 'Accesorio' },
+
+  // Otros / Other
+  'otros': { en: 'Other', es: 'Otros' },
+  'other': { en: 'Other', es: 'Otros' },
+  'otro': { en: 'Other', es: 'Otro' },
+  'others': { en: 'Other', es: 'Otros' },
 
   // Generales y Filtros Globales
   'repuestos generales': { en: 'General Parts', es: 'Repuestos Generales' },
@@ -87,36 +127,59 @@ export const CATEGORY_TRANSLATIONS: Record<string, { en: string; es: string }> =
 
 export const translateCategoryName = (name: string, lang: Language): string => {
   if (!name) return '';
-  const key = name.trim().toLowerCase();
-  const match = CATEGORY_TRANSLATIONS[key];
+  const clean = name.trim().toLowerCase();
+  const normalized = clean.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  const match = CATEGORY_TRANSLATIONS[clean] || CATEGORY_TRANSLATIONS[normalized];
   if (match) {
     return match[lang];
   }
 
   // Búsqueda inteligente por coincidencia parcial si la categoría viene con texto adicional
-  if (key.includes('motor') || key.includes('engine')) {
+  if (normalized.includes('motor') || normalized.includes('engine')) {
     return lang === 'en' ? 'Engines' : 'Motores';
   }
-  if (key.includes('freno') || key.includes('brake')) {
+  if (normalized.includes('turbo')) {
+    return lang === 'en' ? 'Turbos' : 'Turbos';
+  }
+  if (normalized.includes('freno') || normalized.includes('brake')) {
     return lang === 'en' ? 'Brakes' : 'Frenos';
   }
-  if (key.includes('camion') || key.includes('truck')) {
+  if (normalized.includes('camion') || normalized.includes('truck')) {
     return lang === 'en' ? 'Trucks' : 'Camiones';
   }
-  if (key.includes('transmisi') || key.includes('transmission')) {
+  if (normalized.includes('transmisi') || normalized.includes('transmission')) {
     return lang === 'en' ? 'Transmissions' : 'Transmisiones';
   }
-  if (key.includes('diferencial') || key.includes('differential')) {
+  if (normalized.includes('llanta') || normalized.includes('tire') || normalized.includes('wheel')) {
+    return lang === 'en' ? 'Tires' : 'Llantas';
+  }
+  if (normalized.includes('hidraul') || normalized.includes('hydraul')) {
+    return lang === 'en' ? 'Hydraulics' : 'Hidráulicos';
+  }
+  if (normalized.includes('cabin')) {
+    return lang === 'en' ? 'Cabins' : 'Cabinas';
+  }
+  if (normalized.includes('chasi') || normalized.includes('frame')) {
+    return lang === 'en' ? 'Chassis' : 'Chasis';
+  }
+  if (normalized.includes('accesori') || normalized.includes('accessori')) {
+    return lang === 'en' ? 'Accessories' : 'Accesorios';
+  }
+  if (normalized.includes('diferencial') || normalized.includes('differential')) {
     return lang === 'en' ? 'Differentials' : 'Diferenciales';
   }
-  if (key.includes('suspensi') || key.includes('suspension')) {
+  if (normalized.includes('suspensi') || normalized.includes('suspension')) {
     return lang === 'en' ? 'Suspension' : 'Suspensión';
   }
-  if (key.includes('inyecc') || key.includes('inject')) {
+  if (normalized.includes('inyecc') || normalized.includes('inject')) {
     return lang === 'en' ? 'Injection' : 'Inyección';
   }
-  if (key.includes('filtr') || key.includes('filter')) {
+  if (normalized.includes('filtr') || normalized.includes('filter')) {
     return lang === 'en' ? 'Filters' : 'Filtros';
+  }
+  if (normalized.includes('otro') || normalized.includes('other') || normalized.includes('misc')) {
+    return lang === 'en' ? 'Other' : 'Otros';
   }
 
   return name;

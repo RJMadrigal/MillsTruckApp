@@ -15,18 +15,25 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCategories } from '../hooks/useProducts';
 import { Category } from '../types/catalog.types';
 import { useLanguage } from '../../../i18n/LanguageContext';
+import { getCategoryIcon } from '../utils/productUtils';
 
 // Quick department filter chips
 const DEPARTMENT_TAGS = [
   { id: 'all', label: 'All', labelEs: 'Todo' },
   { id: 'truck', label: 'Trucks', labelEs: 'Camiones', keywords: ['camion', 'truck', 'cabezal'] },
-  { id: 'engine', label: 'Engines & Turbos', labelEs: 'Motores y Turbos', keywords: ['motor', 'engine', 'turbo', 'diesel'] },
+  { id: 'engine', label: 'Engines', labelEs: 'Motores', keywords: ['motor', 'engine', 'diesel'] },
+  { id: 'turbo', label: 'Turbos', labelEs: 'Turbos', keywords: ['turbo'] },
   { id: 'transmi', label: 'Transmissions', labelEs: 'Transmisiones', keywords: ['transmi', 'gear', 'embrague', 'clutch'] },
   { id: 'brake', label: 'Brakes', labelEs: 'Frenos', keywords: ['freno', 'brake', 'bendix', 'zapata'] },
+  { id: 'tires', label: 'Tires & Wheels', labelEs: 'Llantas y Ruedas', keywords: ['llanta', 'tire', 'rueda', 'neumat'] },
+  { id: 'hydraulics', label: 'Hydraulics', labelEs: 'Hidráulicos', keywords: ['hidraul', 'hydraul', 'bomba'] },
+  { id: 'cabins', label: 'Cabins', labelEs: 'Cabinas', keywords: ['cabin', 'carrocer', 'puerta'] },
+  { id: 'chassis', label: 'Chassis', labelEs: 'Chasis', keywords: ['chasi', 'frame'] },
+  { id: 'accessories', label: 'Accessories', labelEs: 'Accesorios', keywords: ['accesori', 'accessori', 'herramient'] },
   { id: 'suspension', label: 'Suspension & Axles', labelEs: 'Suspensiones y Ejes', keywords: ['suspens', 'eje', 'axle', 'difer'] },
-  { id: 'injection', label: 'Fuel & Injection', labelEs: 'Combustible e Inyección', keywords: ['inyec', 'combust', 'bomba'] },
   { id: 'filters', label: 'Filters & Oil', labelEs: 'Filtros y Aceites', keywords: ['filtro', 'oil', 'lubric'] },
   { id: 'electrical', label: 'Electrical', labelEs: 'Eléctrico', keywords: ['electr', 'luz', 'sensor', 'flash'] },
+  { id: 'others', label: 'Other', labelEs: 'Otros', keywords: ['otro', 'other', 'misc'] },
 ];
 
 export const CategoryScreen: React.FC = () => {
@@ -36,19 +43,6 @@ export const CategoryScreen: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
-
-  const getCategoryIcon = (name: string) => {
-    const n = name.toLowerCase();
-    if (n.includes('camion') || n.includes('truck')) return 'truck';
-    if (n.includes('motor') || n.includes('engine') || n.includes('turbo')) return 'engine-outline';
-    if (n.includes('freno') || n.includes('brake')) return 'car-brake-alert';
-    if (n.includes('transmi') || n.includes('gear') || n.includes('clutch')) return 'cog-outline';
-    if (n.includes('suspens') || n.includes('eje') || n.includes('axle') || n.includes('difer'))
-      return 'car-traction-control';
-    if (n.includes('filtro') || n.includes('oil')) return 'oil';
-    if (n.includes('electr') || n.includes('luz')) return 'flash-outline';
-    return 'truck-outline';
-  };
 
   // Filtrado reactivo por texto y por chip de departamento
   const filteredCategories = useMemo(() => {
