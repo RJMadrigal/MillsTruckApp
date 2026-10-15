@@ -13,6 +13,9 @@ web-build/
 # macOS
 .DS_Store
 
+# AI Assistant / Agent Skills (Not part of app source code)
+.agents/
+
 # Environment Variables (Keep secrets out of public repos)
 .env
 .env.local
