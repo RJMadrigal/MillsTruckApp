@@ -125,7 +125,12 @@ MillstruckserviceApp/
    npm install
    ```
 
-3. **Verify TypeScript compilation:**
+3. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Verify TypeScript compilation:**
    ```bash
    npm run ts:check
    ```

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// URL base oficial de la API de administración de Mills Truck Service en SmarterASP.NET
-export const BASE_URL = 'https://api.millstruckservices.com';
+// Base URL resolved dynamically via environment variables (EXPO_PUBLIC_API_URL)
+export const BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL?.replace(/\/+$/, '') || 'https://api.millstruckservices.com';
 export const API_BASE_URL = `${BASE_URL}/api`;
 export const AUTH_TOKEN_KEY = 'mills_auth_token';
 export const REFRESH_TOKEN_KEY = 'mills_refresh_token';

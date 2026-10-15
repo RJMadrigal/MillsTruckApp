@@ -12,3 +12,8 @@ web-build/
 
 # macOS
 .DS_Store
+
+# Environment Variables (Keep secrets out of public repos)
+.env
+.env.local
+.env.*.local
